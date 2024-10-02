@@ -12,14 +12,7 @@
 use panic_halt as _;
 // Alias for our HAL crate
 use rp235x_hal as hal;
-
-// USB Device support
-use usb_device::{class_prelude::*, prelude::*};
-// USB PicoTool Class Device support
-use usbd_picotool_reset::PicoToolReset;
-
 // Logging support
-use defmt::*;
 use defmt_rtt as _;
 
 // Some things we need
@@ -78,27 +71,7 @@ fn main() -> ! {
     // Configure GPIO25 as an output
     let mut led_pin = pins.gpio25.into_push_pull_output();
 
-     // Set up the USB driver
-     let usb_bus = UsbBusAllocator::new(hal::usb::UsbBus::new(
-        pac.USB,
-        pac.USB_DPRAM,
-        clocks.usb_clock,
-        true,
-        &mut pac.RESETS,
-    ));
-
-    // Set up the USB PicoTool Class Device driver
-    let mut picotool: PicoToolReset<_> = PicoToolReset::new(&usb_bus);
-
-    let mut usb_dev = UsbDeviceBuilder::new(&usb_bus, UsbVidPid(0x2e8a, 0x000a))
-        .manufacturer("nl")
-        .product("PicoTool Reset")
-        .serial_number("PICO")
-        .device_class(0) // from: https://www.usb.org/defined-class-codes
-        .build();
-
     loop {
-        usb_dev.poll(&mut [&mut picotool]);
         led_pin.set_high().unwrap();
         timer.delay_ms(500);
         led_pin.set_low().unwrap();

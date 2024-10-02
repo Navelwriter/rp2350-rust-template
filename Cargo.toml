@@ -1,5 +1,5 @@
 [package]
-name = "{{project-name}}"
+name = "rp2350-template"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
@@ -7,25 +7,26 @@ license = "MIT"
 [dependencies]
 # Necessary Dependancies
 cortex-m = "0.7.2" # Low-level access to Cortex-M processors
-cortex-m-rt = "0.7" # Cortex-M startup code and minimal runtime
+cortex-m-rt = "0.7.3" # Cortex-M startup code and minimal runtime
 cortex-m-rtic = "1.1.4" # Real-Time Interrupt-driven Concurrency
 critical-section = { version = "1.0.0" } # Allows for critical sections in the code, like disabling interrupts
 
 # RP2350 Specific Dependencies
-pio = "0.2.0" # Support for both rp2040 and rp235x PIO 
-pio-proc = "0.2.0" # Supports PIO state machine assembly creation at compile time
+pio = "*" # Support for both rp2040 and rp235x PIO 
+pio-proc = "*" # Supports PIO state machine assembly creation at compile time
 rp235x-hal = { git = "https://github.com/rp-rs/rp-hal.git", version = "0.2.0", features = [
     "binary-info",
     "critical-section-impl",
     "rt",
     "defmt",
-] } # Get the HAL for the RP2350 from the rp-hal repo
+] }
 
 # Debug and Logging
 defmt = "0.3.8" # Debug framework for embedded applications
 defmt-rtt = "0.4.1" # RTT support for defmt transmissions
 panic-probe = { version = "0.3.2", features = ["print-defmt"] } # Panic handler
-usbd-picotool-reset = "0.1.1" # Resets the RP2350 into bootloader mode
+panic-halt = "0.2.0" # Panic handler for no_std environments
+#usbd-picotool-reset = { git = "https://github.com/Navelwriter/usbd-picotool-reset.git", version = "*"} # Resets the RP2350 into bootloader mode
 
 # HAL crates managed by HAL team
 embedded-alloc = "0.6.0" # Provides a global heap allocator for embedded systems
@@ -41,8 +42,8 @@ heapless = "0.8.0" # Heapless data structures w/o needing heap allocation
 static_cell = "2.1.0" # Statically allocate memory at compile time w/o alloc or std
 
 # USB Dependencies
-usb-device = "0.3.2"
-usbd-serial = "0.2.2"
+#usb-device = "0.3.2"
+#usbd-serial = "0.2.2"
 #END OF CRATES
 
 # The following define the build profiles for the project
