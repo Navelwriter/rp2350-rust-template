@@ -1,0 +1,100 @@
+[package]
+name = "{{project-name}}"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+
+[dependencies]
+# Necessary Dependancies
+cortex-m = "0.7.2" # Low-level access to Cortex-M processors
+cortex-m-rt = "0.7" # Cortex-M startup code and minimal runtime
+cortex-m-rtic = "1.1.4" # Real-Time Interrupt-driven Concurrency
+critical-section = { version = "1.0.0" } # Allows for critical sections in the code, like disabling interrupts
+
+# RP2350 Specific Dependencies
+pio = "0.2.0" # Support for both rp2040 and rp235x PIO 
+pio-proc = "0.2.0" # Supports PIO state machine assembly creation at compile time
+rp235x-hal = { git = "https://github.com/rp-rs/rp-hal.git", version = "0.2.0", features = [
+    "binary-info",
+    "critical-section-impl",
+    "rt",
+    "defmt",
+] } # Get the HAL for the RP2350 from the rp-hal repo
+
+# Debug and Logging
+defmt = "0.3.8" # Debug framework for embedded applications
+defmt-rtt = "0.4.1" # RTT support for defmt transmissions
+panic-probe = { version = "0.3.2", features = ["print-defmt"] } # Panic handler
+usbd-picotool-reset = "0.1.1" # Resets the RP2350 into bootloader mode
+
+# HAL crates managed by HAL team
+embedded-alloc = "0.6.0" # Provides a global heap allocator for embedded systems
+embedded-hal = "1.0.0" # Hardware Abstraction Layer, blocking
+embedded-hal-async = "1.0.0" # Hardware Abstraction Layer, async
+embedded-io = "0.6.1" # I/O abstractions for embedded systems
+nb = "1.1" # Minimal and reusable non-blocking I/O layer
+
+# Other Dependencies (Optional)
+fugit = "0.3.6"
+futures = { version = "0.3.30", default-features = false } #Simple async/await support
+heapless = "0.8.0" # Heapless data structures w/o needing heap allocation
+static_cell = "2.1.0" # Statically allocate memory at compile time w/o alloc or std
+
+# USB Dependencies
+usb-device = "0.3.2"
+usbd-serial = "0.2.2"
+#END OF CRATES
+
+# The following define the build profiles for the project
+
+# cargo build/run
+[profile.dev]
+codegen-units = 1
+debug = 2
+debug-assertions = true
+incremental = false
+opt-level = 3
+overflow-checks = true
+
+# cargo build/run --release
+[profile.release]
+codegen-units = 1
+debug = 2
+debug-assertions = false
+incremental = false
+lto = 'fat'
+opt-level = 3
+overflow-checks = false
+
+# do not optimize proc-macro crates = faster builds from scratch
+[profile.dev.build-override]
+codegen-units = 8
+debug = false
+debug-assertions = false
+opt-level = 0
+overflow-checks = false
+
+[profile.release.build-override]
+codegen-units = 8
+debug = false
+debug-assertions = false
+opt-level = 0
+overflow-checks = false
+
+# cargo test
+[profile.test]
+codegen-units = 1
+debug = 2
+debug-assertions = true
+incremental = false
+opt-level = 3
+overflow-checks = true
+
+# cargo test --release
+[profile.bench]
+codegen-units = 1
+debug = 2
+debug-assertions = false
+incremental = false
+lto = 'fat'
+opt-level = 3
