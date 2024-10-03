@@ -126,7 +126,7 @@ fn main() -> ! {
     // The direction we're incrementing our LED period.
     // Since we start at the minimum value, start by counting up
     let mut count_up = true;
-
+    let mut count = true;
     // Set up the USB driver
     let usb_bus = UsbBusAllocator::new(hal::usb::UsbBus::new(
         pac.USB,
@@ -148,38 +148,47 @@ fn main() -> ! {
         .unwrap()
         .device_class(0) // from: https://www.usb.org/defined-class-codes
         .build();
+    
+    sio.fifo.write(led_period as u32);
 
     loop {
-        if count_up {
-            // Increment our period
-            led_period += LED_PERIOD_INCREMENT;
-
-            // Change direction of increment if we hit the limit
-            if led_period > LED_PERIOD_MAX {
-                led_period = LED_PERIOD_MAX;
-                count_up = false;
+        if count {
+            if count_up {
+                // Increment our period
+                led_period += LED_PERIOD_INCREMENT;
+    
+                // Change direction of increment if we hit the limit
+                if led_period > LED_PERIOD_MAX {
+                    led_period = LED_PERIOD_MAX;
+                    count_up = false;
+                }
+            } else {
+                // Decrement our period
+                led_period -= LED_PERIOD_INCREMENT;
+    
+                // Change direction of increment if we hit the limit
+                if led_period < LED_PERIOD_MIN {
+                    led_period = LED_PERIOD_MIN;
+                    count_up = true;
+                }
             }
-        } else {
-            // Decrement our period
-            led_period -= LED_PERIOD_INCREMENT;
 
-            // Change direction of increment if we hit the limit
-            if led_period < LED_PERIOD_MIN {
-                led_period = LED_PERIOD_MIN;
-                count_up = true;
+            // It should not be possible for led_period to go negative, but let's ensure that.
+            if led_period < 0 {
+                led_period = 0;
             }
         }
-
-        // It should not be possible for led_period to go negative, but let's ensure that.
-        if led_period < 0 {
-            led_period = 0;
-        }
-
-        // Send the new delay time to Core 1. We convert it
-        sio.fifo.write(LED_PERIOD_MAX as u32);
 
         // Sleep until Core 1 sends a message to tell us it is done
         let ack = sio.fifo.read();
+        if ack == core::prelude::v1::Some(CORE1_TASK_COMPLETE) {
+            sio.fifo.write(led_period as u32);
+            count = true;
+        }
+        else {
+            count = false;
+        }
+
         usb_dev.poll(&mut [&mut picotool]);
     }
 }
