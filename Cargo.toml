@@ -23,10 +23,11 @@ rp235x-hal = { git = "https://github.com/rp-rs/rp-hal.git", version = "0.2.0", f
 
 # Debug and Logging
 defmt = "0.3.8" # Debug framework for embedded applications
-defmt-rtt = "0.4.1" # RTT support for defmt transmissions
+#defmt-rtt = "0.4.1" # RTT support for defmt transmissions
 panic-probe = { version = "0.3.2", features = ["print-defmt"] } # Panic handler
 panic-halt = "0.2.0" # Panic handler for no_std environments
-#usbd-picotool-reset = { git = "https://github.com/Navelwriter/usbd-picotool-reset.git", version = "*"} # Resets the RP2350 into bootloader mode
+usbd-picotool-reset = { git = "https://github.com/Navelwriter/usbd-picotool-reset.git", version = "*"} # Resets the RP2350 into bootloader mode
+#usbd-picotool-reset = { path = "../usbd-picotool-reset", version = "*"} # Resets the RP2350 into bootloader mode
 
 # HAL crates managed by HAL team
 embedded-alloc = "0.6.0" # Provides a global heap allocator for embedded systems
@@ -42,7 +43,7 @@ heapless = "0.8.0" # Heapless data structures w/o needing heap allocation
 static_cell = "2.1.0" # Statically allocate memory at compile time w/o alloc or std
 
 # USB Dependencies
-#usb-device = "0.3.2"
+usb-device = "0.3.2"
 #usbd-serial = "0.2.2"
 #END OF CRATES
 

@@ -19,6 +19,12 @@ use defmt_rtt as _;
 use embedded_hal::delay::DelayNs;
 use embedded_hal::digital::OutputPin;
 
+// USB Device support
+use usb_device::{class_prelude::*, prelude::*};
+
+// USB PicoTool Class Device support
+use usbd_picotool_reset::PicoToolReset;
+
 /// Tell the Boot ROM about our application
 #[link_section = ".start_block"]
 #[used]
@@ -55,8 +61,6 @@ fn main() -> ! {
     )
     .unwrap();
 
-    let mut timer = hal::Timer::new_timer0(pac.TIMER0, &mut pac.RESETS, &clocks);
-
     // The single-cycle I/O block controls our GPIO pins
     let sio = hal::Sio::new(pac.SIO);
 
@@ -71,11 +75,32 @@ fn main() -> ! {
     // Configure GPIO25 as an output
     let mut led_pin = pins.gpio25.into_push_pull_output();
 
+    // Set up the USB driver
+    let usb_bus = UsbBusAllocator::new(hal::usb::UsbBus::new(
+        pac.USB,
+        pac.USB_DPRAM,
+        clocks.usb_clock,
+        true,
+        &mut pac.RESETS,
+    ));
+
+    // Set up the USB PicoTool Class Device driver
+    let mut picotool: PicoToolReset<_> = PicoToolReset::new(&usb_bus);
+
+    // Create a USB device RPI Vendor ID and on of these Product ID:
+    // https://github.com/raspberrypi/picotool/blob/master/picoboot_connection/picoboot_connection.c#L23-L27
+    let mut usb_dev = UsbDeviceBuilder::new(&usb_bus, UsbVidPid(0x2e8a, 0x000a))
+        .strings(&[StringDescriptors::default()
+            .manufacturer("Fake company")
+            .product("Serial port")
+            .serial_number("TEST")])
+        .unwrap()
+        .device_class(0) // from: https://www.usb.org/defined-class-codes
+        .build();
+
     loop {
+        usb_dev.poll(&mut [&mut picotool]);
         led_pin.set_high().unwrap();
-        timer.delay_ms(500);
-        led_pin.set_low().unwrap();
-        timer.delay_ms(500);
     }
 }
 
