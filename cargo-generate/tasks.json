@@ -23,7 +23,7 @@
                 "--output-target",
                 "binary",
                 "./target/thumbv8m.main-none-eabihf/debug/{{project-name}}",
-                "./target/thumbv8m.main-none-eabihf/debug/{{project-name}}"
+                "./target/thumbv8m.main-none-eabihf/debug/{{project-name}}.bin"
             ],
             "problemMatcher": [
                 "$rustc"
