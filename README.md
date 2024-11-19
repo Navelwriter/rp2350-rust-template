@@ -67,8 +67,8 @@ This is a tool that allows you to detect stack overflows in your code. It's a gr
 
 ## Branches:
 There are two branches in this repo: `Main` and `picotool-reset`
-- `Main`: This is identical functionality to [rp-rs/rp2040-project-template](https://github.com/rp-rs/rp2040-project-template/tree/main). The only difference is that the runner is exclusively set to picotool
-- `picotool-reset`: This is based on the [`Multicore FIFO`](https://github.com/rp-rs/rp-hal/blob/main/rp235x-hal-examples/src/bin/multicore_fifo_blink.rs) example. This uses the same idea of using both cores, but instead of a blocking wait in core1, it simply polls core1 to see if it's done. This allows for the Pico 2 to act as a USB device that picotool can recognize, and with a port of [usbd-picotool-reset](https://github.com/Navelwriter/usbd-picotool-reset), am able to reboot the pico into BOOTSEL mode using only the command line. 
+- `Main`: This is identical functionality to [rp-rs/rp2040-project-template](https://github.com/rp-rs/rp2040-project-template/tree/main). The only difference is that the runner is using the raspberry-pi debug probe using vscode to parse through code. 
+- `picotool-reset`: This is based on the [`Multicore FIFO`](https://github.com/rp-rs/rp-hal/blob/main/rp235x-hal-examples/src/bin/multicore_fifo_blink.rs) example. This uses both cores, but instead of a blocking wait in core1, it simply polls core1 to see if it's done. This allows for the Pico 2 to act as a USB device that picotool can recognize, and with a port of [usbd-picotool-reset](https://github.com/Navelwriter/usbd-picotool-reset), am able to reboot the pico into BOOTSEL mode using only the command line. 
 
 ## Requirements
 - The standard Rust tooling (cargo, rustup) which you can install from https://rustup.rs/
