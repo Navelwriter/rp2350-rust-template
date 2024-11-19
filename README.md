@@ -2,7 +2,8 @@
 The main branch is best used with cortex-m debugger using the picoprobe debugger as the runner. This allows for automatic flashing and line-by-line debugging in vscode.\
 Also allows for defmt to be used for logging.
 
-`picotool` is also available as a runner so every time you want to flash, you will need to plug in the Pico 2 while holding down BOOTSEL, or some other means of getting there./
+`picotool` is also available as a runner so every time you want to flash, you will need to plug in the Pico 2 while holding down BOOTSEL, or some other means of getting there.
+
 This means that once it's in BOOTSEL mode, it's as easy as
 ```sh 
 cargo run
@@ -14,8 +15,8 @@ cargo run --release
 ```
 for release builds
 
-## Cargo Generate
-To use this template, you can use cargo generate.\
+## Cargo Generate (Recommended)
+To use this template, you can (should) use cargo generate.\
 This also renames all instances of `rp2040-project-template` to the name you provide, including the vscode workspace files. This makes it effortless to start a new project with this template.\
 To install cargo generate, run
 ```sh
@@ -50,7 +51,7 @@ log!(info, "Hello, world!");
 log!(warn, "This is a warning");
 log!(error, "This is an error");
 ```
-If you want to log a value, you can use the `format!` macro
+If you want to log a value, you can just use it the normal way in rust
 ```rust
 let x = 5;
 log!(info, "The value of x is {}", x);
