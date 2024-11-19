@@ -19,6 +19,16 @@ use defmt_rtt as _;
 use embedded_hal::delay::DelayNs;
 use embedded_hal::digital::OutputPin;
 
+// Create a logging macro
+macro_rules! log { //Treat as: fn log!(Level, "Message")
+    ($level:ident, $($arg:tt)*) => {
+        {
+            #[cfg(feature = "debug-logging")]
+            defmt::$level!($($arg)*);
+        }
+    };
+}
+
 /// Tell the Boot ROM about our application
 #[link_section = ".start_block"]
 #[used]
@@ -28,11 +38,6 @@ pub static IMAGE_DEF: hal::block::ImageDef = hal::block::ImageDef::secure_exe();
 /// Adjust if your board has a different frequency
 const XTAL_FREQ_HZ: u32 = 12_000_000u32;
 
-/// Entry point to our bare-metal application.
-///
-/// The `#[hal::entry]` macro ensures the Cortex-M start-up code calls this function
-/// as soon as all global variables and the spinlock are initialised.
-///
 /// The function configures the rp235x peripherals, then toggles a GPIO pin in
 /// an infinite loop. If there is an LED connected to that pin, it will blink.
 #[hal::entry]
@@ -71,6 +76,11 @@ fn main() -> ! {
     // Configure GPIO25 as an output
     let mut led_pin = pins.gpio25.into_push_pull_output();
 
+    //demo of logging
+    log!(info, "Hello, world!");
+    log!(warn, "This is a warning");
+    log!(error, "This is an error");
+
     loop {
         led_pin.set_high().unwrap();
         timer.delay_ms(500);
@@ -78,16 +88,5 @@ fn main() -> ! {
         timer.delay_ms(500);
     }
 }
-
-/// Program metadata for `picotool info`
-#[link_section = ".bi_entries"]
-#[used]
-pub static PICOTOOL_ENTRIES: [hal::binary_info::EntryAddr; 5] = [
-    hal::binary_info::rp_cargo_bin_name!(),
-    hal::binary_info::rp_cargo_version!(),
-    hal::binary_info::rp_program_description!(c"Blinky Example"),
-    hal::binary_info::rp_cargo_homepage_url!(),
-    hal::binary_info::rp_program_build_attribute!(),
-];
 
 // End of file

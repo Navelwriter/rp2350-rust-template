@@ -1,0 +1,68 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558 
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Cargo build",
+            "type": "shell",
+            "command": "cargo",
+            "args": [
+                "build"
+            ],
+            "problemMatcher": [
+                "$rustc"
+            ],
+            "group": "build"
+        },
+        {
+            "label": "Build binary",
+            "type": "shell",
+            "command": "arm-none-eabi-objcopy",
+            "args": [
+                "--output-target",
+                "binary",
+                "./target/thumbv8m.main-none-eabihf/debug/{{project-name}}",
+                "./target/thumbv8m.main-none-eabihf/debug/{{project-name}}"
+            ],
+            "problemMatcher": [
+                "$rustc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "dependsOn": "Cargo build"
+        },
+        {
+            "label": "Run defmt-print",
+            "type": "shell",
+            "command": "nc",
+            "args": [
+                "localhost",
+                "8765"
+            ],
+            "problemMatcher": [],
+            "isBackground": true,
+            "options": {
+                "shell": {
+                    "executable": "/bin/bash",
+                    "args": [
+                        "-c",
+                        "nc localhost 8765 | defmt-print -e target/thumbv8m*/debug/{{project-name}}"
+                    ]
+                }
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new"
+            },
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
+        }
+    ]
+}
