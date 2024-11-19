@@ -1,6 +1,5 @@
 file::delete("Cargo.toml");
 file::rename("cargo-generate/Cargo.toml", "Cargo.toml");
-file::delete("cargo-generate")
 file::delete(".vscode/launch.json");
 file::delete(".vscode/tasks.json");
 file::rename("cargo-generate/launch.json", ".vscode/launch.json");
