@@ -44,8 +44,8 @@ static_cell = "2.1.0" # Statically allocate memory at compile time w/o alloc or 
 
 # Features for Debugging
 [features]
-default = ["debug"] 
-debug = ["defmt", "defmt-rtt", "panic-probe"] # Debugging features
+default = ["debug-logging"] 
+debug-logging = ["defmt", "defmt-rtt", "panic-probe"] # Debugging features
 
 # The following define the build profiles for the project
 # cargo build/run
@@ -63,7 +63,7 @@ rpath = false
 # cargo build/run --release
 [profile.release]
 codegen-units = 1
-debug = false
+debug-logging = false
 debug-assertions = false
 incremental = false
 lto = 'fat'
