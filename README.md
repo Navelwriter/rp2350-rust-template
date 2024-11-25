@@ -78,6 +78,8 @@ There are two branches in this repo: `Main` and `picotool-reset`
 - Picotool(optional) and SDK for the rp2350. Both are easy to install through install script in `Appendix B` [here](https://datasheets.raspberrypi.com/pico/getting-started-with-pico.pdf)
 - flip-link - this allows you to detect stack-overflows on the first core, which is the only supported target for now.
 - Raspberry Pi Pico 2
+- openocd, install with `sudo apt-get openocd`
+- VSCode with Cortex-Debugger extension
 
 ## Installation
 ```sh
