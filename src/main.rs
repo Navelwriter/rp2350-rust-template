@@ -7,18 +7,14 @@
 #![no_std]
 #![no_main]
 
-// Ensure we halt the program on panic (if we don't mention this crate it won't
-// be linked)
-use panic_halt as _;
+use defmt::*;
 // Alias for our HAL crate
-use rp235x_hal as hal;
-// Logging support
-use defmt_rtt as _;
-
-// Some things we need
-use embedded_hal::delay::DelayNs;
-use embedded_hal::digital::OutputPin;
-
+use embassy_executor::Spawner;
+use embassy_rp::gpio;
+use embassy_time::{Duration, Timer};
+use gpio::{Level, Output};
+use {defmt_rtt as _, panic_probe as _};
+use embassy_rp::block::ImageDef;
 // Create a logging macro
 macro_rules! log { //Treat as: fn log!(Level, "Message")
     ($level:ident, $($arg:tt)*) => {
@@ -29,64 +25,33 @@ macro_rules! log { //Treat as: fn log!(Level, "Message")
     };
 }
 
+#[cortex_m_rt::pre_init]
+unsafe fn before_main() {
+    // Soft-reset doesn't clear spinlocks. Clear the one used by critical-section
+    // before we hit main to avoid deadlocks when using a debugger
+    embassy_rp::pac::SIO.spinlock(31).write_value(1);
+}
+
 /// Tell the Boot ROM about our application
 #[link_section = ".start_block"]
 #[used]
-pub static IMAGE_DEF: hal::block::ImageDef = hal::block::ImageDef::secure_exe();
-
-/// External high-speed crystal on the Raspberry Pi Pico 2 board is 12 MHz.
-/// Adjust if your board has a different frequency
-const XTAL_FREQ_HZ: u32 = 12_000_000u32;
+pub static IMAGE_DEF: ImageDef = ImageDef::secure_exe();
 
 /// The function configures the rp235x peripherals, then toggles a GPIO pin in
 /// an infinite loop. If there is an LED connected to that pin, it will blink.
-#[hal::entry]
-fn main() -> ! {
-    // Grab our singleton objects
-    let mut pac = hal::pac::Peripherals::take().unwrap();
-
-    // Set up the watchdog driver - needed by the clock setup code
-    let mut watchdog = hal::Watchdog::new(pac.WATCHDOG);
-
-    // Configure the clocks
-    let clocks = hal::clocks::init_clocks_and_plls(
-        XTAL_FREQ_HZ,
-        pac.XOSC,
-        pac.CLOCKS,
-        pac.PLL_SYS,
-        pac.PLL_USB,
-        &mut pac.RESETS,
-        &mut watchdog,
-    )
-    .unwrap();
-
-    let mut timer = hal::Timer::new_timer0(pac.TIMER0, &mut pac.RESETS, &clocks);
-
-    // The single-cycle I/O block controls our GPIO pins
-    let sio = hal::Sio::new(pac.SIO);
-
-    // Set the pins to their default state
-    let pins = hal::gpio::Pins::new(
-        pac.IO_BANK0,
-        pac.PADS_BANK0,
-        sio.gpio_bank0,
-        &mut pac.RESETS,
-    );
-
-    // Configure GPIO25 as an output
-    let mut led_pin = pins.gpio25.into_push_pull_output();
-
-    //demo of logging
-    log!(info, "Hello, world!");
-    log!(warn, "This is a warning");
-    log!(error, "This is an error");
+#[embassy_executor::main]
+async fn main(_spawner: Spawner) {
+    log!(info, "Start!");
+    let p = embassy_rp::init(Default::default());
+    let mut led = Output::new(p.PIN_25, Level::Low);
 
     loop {
-        led_pin.set_high().unwrap();
-        timer.delay_ms(500);
-        led_pin.set_low().unwrap();
-        timer.delay_ms(500);
+        log!(info, "led on!");
+        led.set_high();
+        Timer::after_secs(1).await;
+
+        log!(info, "led off!");
+        led.set_low();
+        Timer::after_secs(1).await;
     }
 }
-
-// End of file

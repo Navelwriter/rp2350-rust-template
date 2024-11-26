@@ -22,8 +22,8 @@
             "args": [
                 "--output-target",
                 "binary",
-                "./target/thumbv8m.main-none-eabihf/debug/rp2350-template",
-                "./target/thumbv8m.main-none-eabihf/debug/rp2350-template.bin"
+                "./target/thumbv8m.main-none-eabihf/debug/rp2350-embassy-template",
+                "./target/thumbv8m.main-none-eabihf/debug/rp2350-embassy-template.bin"
             ],
             "problemMatcher": [
                 "$rustc"
@@ -49,7 +49,7 @@
                     "executable": "/bin/bash",
                     "args": [
                         "-c",
-                        "nc localhost 8765 | defmt-print -e target/thumbv8m*/debug/rp2350-template"
+                        "nc localhost 8765 | defmt-print -e target/thumbv8m*/debug/rp2350-embassy-template"
                     ]
                 }
             },

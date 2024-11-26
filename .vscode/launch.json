@@ -10,7 +10,7 @@
             "type": "cortex-debug",
             "gdbPath": "gdb-multiarch",
             "cwd": "${workspaceRoot}",
-            "executable": "${workspaceFolder}/target/thumbv8m.main-none-eabihf/debug/rp2350-template",
+            "executable": "${workspaceFolder}/target/thumbv8m.main-none-eabihf/debug/rp2350-embassy-template",
             "servertype": "openocd",
             "configFiles": [
                             "interface/cmsis-dap.cfg",
@@ -26,7 +26,7 @@
             "postLaunchCommands": [
                 "monitor rtt server start 8765 0",
                 // should span the *right* part of RAM
-                "monitor rtt setup 0x2007fbc0 0x30 \"SEGGER RTT\"",
+                "monitor rtt setup 0x20067934 0x30 \"SEGGER RTT\"",
                 "monitor rtt start",
             ],
             //enable livewatch
@@ -44,7 +44,7 @@
             "servertype": "external",
             "gdbTarget": ":3333",
             // TODO adjust all these to fit your system, program and hardware
-            "executable": "./target/thumbv8m.main-none-eabihf/debug/rp2350-template",
+            "executable": "./target/thumbv8m.main-none-eabihf/debug/rp2350-embassy-template",
             "gdbPath": "gdb-multiarch", // or gdb or multiarch-gdb
         }
     ]

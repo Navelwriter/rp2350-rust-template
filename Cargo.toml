@@ -1,5 +1,5 @@
 [package]
-name = "rp2350-template"
+name = "rp2350-embassy-template"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
@@ -8,6 +8,39 @@ license = "MIT"
 "cargo-binutils" = { version = "*" }  
 
 [dependencies]
+
+embassy-executor = { version = "0.6.3", git = "https://github.com/embassy-rs/embassy.git", rev = "227e073fca97bcbcec42d9705e0a8ef19fc433b5", features = [
+    "task-arena-size-98304",
+    "arch-cortex-m",
+    "executor-thread",
+    "executor-interrupt",
+    "defmt",
+    "integrated-timers",
+] }
+
+embassy-sync = { version = "0.6.0", git = "https://github.com/embassy-rs/embassy.git", rev = "227e073fca97bcbcec42d9705e0a8ef19fc433b5", features = ["defmt"] }
+
+embassy-time = { version = "0.3.2", git = "https://github.com/embassy-rs/embassy.git", rev = "227e073fca97bcbcec42d9705e0a8ef19fc433b5", features = ["defmt", "defmt-timestamp-uptime"] }
+
+embassy-rp = { version = "0.2.0", git = "https://github.com/embassy-rs/embassy.git", rev = "227e073fca97bcbcec42d9705e0a8ef19fc433b5", features = [
+    "defmt",
+    "unstable-pac",
+    "time-driver",
+    "critical-section-impl",
+    "rp235xa",
+    "binary-info",
+] }
+
+embassy-usb = { version = "0.3.0", git = "https://github.com/embassy-rs/embassy.git", rev = "227e073fca97bcbcec42d9705e0a8ef19fc433b5", features = [
+    "defmt",
+] }
+
+embassy-futures = { version = "0.1.0" }
+embedded-hal-1 = { package = "embedded-hal", version = "1.0" }
+embedded-hal-async = "1.0"
+embedded-hal-bus = { version = "0.2", features = ["async"] }
+embedded-io-async = { version = "0.6.1", features = [] }
+embedded-storage = { version = "0.3" }
 # Necessary Dependancies
 cortex-m = "0.7.2" # Low-level access to Cortex-M processors
 cortex-m-rt = "0.7.3" # Cortex-M startup code and minimal runtime
@@ -17,12 +50,6 @@ critical-section = { version = "1.0.0" } # Allows for critical sections in the c
 # RP2350 Specific Dependencies
 pio = "*" # Support for both rp2040 and rp235x PIO 
 pio-proc = "*" # Supports PIO state machine assembly creation at compile time
-rp235x-hal = { git = "https://github.com/rp-rs/rp-hal.git", version = "0.2.0", features = [
-    "binary-info",
-    "critical-section-impl",
-    "rt",
-    "defmt",
-] }
 
 # Debug (Only for debug builds, controlled by features)
 defmt = { version = "0.3.8", optional = true } # Debug formatting
@@ -32,20 +59,17 @@ panic-probe = { version = "0.3.2", features = ["print-defmt"], optional = true }
 # Panic handler for release (always included)
 panic-halt = "1.0.0"
 
-# HAL crates managed by HAL team
-embedded-hal = "1.0.0" # Hardware Abstraction Layer, blocking
-embedded-hal-bus = "*"
-
 # Other Dependencies (Optional)
 # fugit = "0.3.6"
 # futures = { version = "0.3.30", default-features = false } #Simple async/await support
+smart-leds = "0.4.0"
 heapless = "0.8.0" # Heapless data structures w/o needing heap allocation
 static_cell = "2.1.0" # Statically allocate memory at compile time w/o alloc or std
 
 # Features for Debugging
 [features]
-default = ["debug"] 
-debug = ["defmt", "defmt-rtt", "panic-probe"] # Debugging features
+default = ["debug-logging"] 
+debug-logging = ["defmt", "defmt-rtt", "panic-probe"] # Debugging features
 
 # The following define the build profiles for the project
 # cargo build/run
@@ -63,7 +87,7 @@ rpath = false
 # cargo build/run --release
 [profile.release]
 codegen-units = 1
-debug = false
+debug-logging = false
 debug-assertions = false
 incremental = false
 lto = 'fat'
