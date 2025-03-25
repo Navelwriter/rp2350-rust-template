@@ -5,47 +5,30 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug Pico",
+            "preLaunchTask": "${defaultBuildTask}",
+            "type": "probe-rs-debug",
             "request": "launch",
-            "type": "cortex-debug",
-            "gdbPath": "gdb-multiarch",
+            "name": "rp2350 probe-rs",
             "cwd": "${workspaceRoot}",
-            "executable": "${workspaceFolder}/target/thumbv8m.main-none-eabihf/debug/{{project-name}}",
-            "servertype": "openocd",
-            "configFiles": [
-                            "interface/cmsis-dap.cfg",
-                            "target/rp2350.cfg",],
-            "preLaunchTask": "Build binary",
-            "device": "RP2350",
-            "gdbTarget": "localhost:50000",
-            "svdFile": "${env:PICO_SDK_PATH}/src/rp2350/hardware_regs/RP2350.svd",
-            "openOCDLaunchCommands": [
-                "adapter speed 5000"
-            ],
-            "showDevDebugOutput": "none",
-            "postLaunchCommands": [
-                "monitor rtt server start 8765 0",
-                // should span the *right* part of RAM
-                "monitor rtt setup 0x2007fbc0 0x30 \"SEGGER RTT\"",
-                "monitor rtt start",
-            ],
-            //enable livewatch
-            "liveWatch": {
-                "enabled": true,
-                "samplesPerSecond": 4
+            "connectUnderReset": false,
+            "speed": 4000,
+            "flashingConfig": {
+              "flashingEnabled": true,
+              "haltAfterReset": false
             },
-            "runToEntryPoint": "main" // This will run the program to the main function
-        },
-        {
-            "cwd": "${workspaceRoot}",
-            "name": "Attach Debug",
-            "request": "attach",
-            "type": "cortex-debug",
-            "servertype": "external",
-            "gdbTarget": ":3333",
-            // TODO adjust all these to fit your system, program and hardware
-            "executable": "./target/thumbv8m.main-none-eabihf/debug/{{project-name}}",
-            "gdbPath": "gdb-multiarch", // or gdb or multiarch-gdb
-        }
+            //!MODIFY
+            "chip": "RP235x",
+            "coreConfigs": [
+              {
+                //!MODIFY
+                "coreIndex": 0,
+                "programBinary": "${workspaceFolder}/target/thumbv8m.main-none-eabihf/debug/{{project-name}}",
+                "svdFile": "${env:PICO_SDK_PATH}/src/rp2350/hardware_regs/RP2350.svd",
+                "rttEnabled": true
+              }
+            ],
+            "consoleLogLevel": "Info", //Error, Warn, Info, Debug, Trace
+            "wireProtocol": "Swd"
+          }
     ]
 }

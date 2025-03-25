@@ -17,7 +17,7 @@ critical-section = { version = "1.0.0" } # Allows for critical sections in the c
 # RP2350 Specific Dependencies
 pio = "*" # Support for both rp2040 and rp235x PIO 
 pio-proc = "*" # Supports PIO state machine assembly creation at compile time
-rp235x-hal = { git = "https://github.com/rp-rs/rp-hal.git", version = "0.2.0", features = [
+rp235x-hal = { git = "https://github.com/rp-rs/rp-hal.git", version = "*", features = [
     "binary-info",
     "critical-section-impl",
     "rt",
