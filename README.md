@@ -2,6 +2,7 @@
 The main branch is best used with cortex-m debugger using the picoprobe debugger as the runner. This allows for automatic flashing and line-by-line debugging in vscode.\
 Also allows for defmt to be used for logging.
 
+
 `picotool` is also available as a runner so every time you want to flash, you will need to plug in the Pico 2 while holding down BOOTSEL, or some other means of getting there.
 
 This means that once it's in BOOTSEL mode, it's as easy as
@@ -68,6 +69,7 @@ This is a tool that allows you to detect stack overflows in your code. It's a gr
 ## Branches:
 There are two branches in this repo: `Main` and `picotool-reset`
 - `Main`: This is identical functionality to [rp-rs/rp2040-project-template](https://github.com/rp-rs/rp2040-project-template/tree/main). The only difference is that the runner is using the raspberry-pi debug probe using vscode to parse through code. 
+- `probe-rs` (**HIGHLY RECOMMENDED**) This is identical to the `Main` branch, but uses the `probe-rs` runner instead of the `picotool` runner. This is the recommended way to run the code as it allows for line-by-line debugging and seamless flashing.
 - `picotool-reset`: This is based on the [`Multicore FIFO`](https://github.com/rp-rs/rp-hal/blob/main/rp235x-hal-examples/src/bin/multicore_fifo_blink.rs) example. This uses both cores, but instead of a blocking wait in core1, it simply polls core1 to see if it's done. This allows for the Pico 2 to act as a USB device that picotool can recognize, and with a port of [usbd-picotool-reset](https://github.com/Navelwriter/usbd-picotool-reset), am able to reboot the pico into BOOTSEL mode using only the command line. 
 
 ## Requirements
@@ -81,6 +83,25 @@ There are two branches in this repo: `Main` and `picotool-reset`
 - openocd, install with `sudo apt-get openocd`
 - VSCode with Cortex-Debugger extension
 
+## Requirements: `probe-rs` branch
+- The standard Rust tooling (cargo, rustup) which you can install from https://rustup.rs/
+- cargo-generate
+- Toolchain support for the cortex-m33 processors in the rp2350 (thumbv8m.main-none-eabihf)
+- Picotool(optional) and SDK for the rp2350. Both are easy to install through install script in `Appendix B` [here](https://datasheets.raspberrypi.com/pico/getting-started-with-pico.pdf)
+### probe-rs specific requirements
+- Follow installation instructions [here](https://probe.rs/docs/getting-started/installation/)
+- Add udev rules for the debug probe (Linux only):
+```sh
+sudo curl -fsSL https://raw.githubusercontent.com/probe-rs/probe-rs/master/udev/99-probe-rs.rules | sudo tee /etc/udev/rules.d/99-probe-rs.rules
+sudo udevadm control --reload
+sudo udevadm trigger
+```
+- Raspberry Pi debug probe 
+- VSCode Extensions:
+    - probe-rs
+    - rust
+    - USBIP Connect (optional, but recommended for WSL)
+
 ## Installation
 ```sh
 rustup target install thumbv8m.main-none-eabihf
@@ -90,6 +111,11 @@ cargo install cargo-generate
 
 ```sh
 cargo generate --git https://github.com/Navelwriter/rp2350-rust-template.git
+```
+
+**For probe-rs branch**
+```sh
+cargo generate --git https://github.com/Navelwriter/rp2350-rust-template.git --branch probe-rs
 ```
 
 ## Running

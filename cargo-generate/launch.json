@@ -8,13 +8,12 @@
             "preLaunchTask": "${defaultBuildTask}",
             "type": "probe-rs-debug",
             "request": "launch",
-            "name": "rp2350 probe-rs",
+            "name": "Debug Pico probe-rs",
             "cwd": "${workspaceRoot}",
             "connectUnderReset": false,
-            "speed": 4000,
             "flashingConfig": {
               "flashingEnabled": true,
-              "haltAfterReset": false
+              "haltAfterReset": false,
             },
             //!MODIFY
             "chip": "RP235x",
