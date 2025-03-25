@@ -1,11 +1,12 @@
 # Project Template for rp235x-hal
-The main branch is best used with cortex-m debugger using the picoprobe debugger as the runner. This allows for automatic flashing and line-by-line debugging in vscode.\
+The main branch is for debugging rust programs on the rp2350 using the raspberry pi debugger using probe-rs. This allows for automatic flashing and line-by-line debugging in vscode.\
 Also allows for defmt to be used for logging.
 
-
+'probe-rs' is the primary runner for this template. It allows for line-by-line debugging and automatic flashing without needing to hold down BOOTSEL.\
+This is the recommended way to run the code.
 `picotool` is also available as a runner so every time you want to flash, you will need to plug in the Pico 2 while holding down BOOTSEL, or some other means of getting there.
 
-This means that once it's in BOOTSEL mode, it's as easy as
+This means that once your ready to debug/flash, it's as easy as
 ```sh 
 cargo run
 ```
@@ -15,6 +16,8 @@ or
 cargo run --release
 ```
 for release builds
+
+and if you use vscode, you can just press the debug button and you're ready to go!
 
 ## Cargo Generate (Recommended)
 To use this template, you can (should) use cargo generate.\
@@ -38,11 +41,13 @@ If you have the picoprobe, or "debugprobe" as it's called now, connected properl
 
 ## Features
 - `defmt` logging
-To use defmt, you need to run the following command in the terminal **during a debug session**
-```sh
-nc localhost 8765 | defmt-print -e target/thumbv8m*/debug/yuh
-```
-This will allow you to see the logs in real-time. 
+> [!NOTE]
+>If using picotool branch:
+>To use defmt, you need to run the following command in the terminal **during a debug session**
+>```sh
+>nc localhost 8765 | defmt-print -e target/thumbv8m*/debug/yuh
+>```
+>This will allow you to see the logs in real-time. 
 
 Remember that defmt is only available in debug builds so you will need to have an active debug session, it defaults to halt on the main() entry so you can just enter the command right after pressing the debug button in vscode.
 
@@ -68,8 +73,7 @@ This is a tool that allows you to detect stack overflows in your code. It's a gr
 
 ## Branches:
 There are two branches in this repo: `Main` and `picotool-reset`
-- `Main`: This is identical functionality to [rp-rs/rp2040-project-template](https://github.com/rp-rs/rp2040-project-template/tree/main). The only difference is that the runner is using the raspberry-pi debug probe using vscode to parse through code. 
-- `probe-rs` (**HIGHLY RECOMMENDED**) This is identical to the `Main` branch, but uses the `probe-rs` runner instead of the `picotool` runner. This is the recommended way to run the code as it allows for line-by-line debugging and seamless flashing.
+- `Main`(**HIGHLY RECOMMENDED**)" This is identical functionality to [rp-rs/rp2040-project-template](https://github.com/rp-rs/rp2040-project-template/tree/main), but uses the `probe-rs` runner instead of the `picotool` runner. This is the recommended way to run the code as it allows for line-by-line debugging and seamless flashing.
 - `picotool-reset`: This is based on the [`Multicore FIFO`](https://github.com/rp-rs/rp-hal/blob/main/rp235x-hal-examples/src/bin/multicore_fifo_blink.rs) example. This uses both cores, but instead of a blocking wait in core1, it simply polls core1 to see if it's done. This allows for the Pico 2 to act as a USB device that picotool can recognize, and with a port of [usbd-picotool-reset](https://github.com/Navelwriter/usbd-picotool-reset), am able to reboot the pico into BOOTSEL mode using only the command line. 
 
 ## Requirements
@@ -81,13 +85,7 @@ There are two branches in this repo: `Main` and `picotool-reset`
 - flip-link - this allows you to detect stack-overflows on the first core, which is the only supported target for now.
 - Raspberry Pi Pico 2
 - openocd, install with `sudo apt-get openocd`
-- VSCode with Cortex-Debugger extension
-
-## Requirements: `probe-rs` branch
-- The standard Rust tooling (cargo, rustup) which you can install from https://rustup.rs/
-- cargo-generate
-- Toolchain support for the cortex-m33 processors in the rp2350 (thumbv8m.main-none-eabihf)
-- Picotool(optional) and SDK for the rp2350. Both are easy to install through install script in `Appendix B` [here](https://datasheets.raspberrypi.com/pico/getting-started-with-pico.pdf)
+- VSCode with Cortex-Debugger extension (if picotool)
 ### probe-rs specific requirements
 - Follow installation instructions [here](https://probe.rs/docs/getting-started/installation/)
 - Add udev rules for the debug probe (Linux only):
